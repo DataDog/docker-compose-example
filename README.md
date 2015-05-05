@@ -10,7 +10,7 @@ Let's see what it looks like.
 
 # Starting off from the Compose example
 
-To build a meaningful setup, we start from the [example(https://docs.docker.com/compose/#overview)]
+To build a meaningful setup, we start from the [example](https://docs.docker.com/compose/#overview)
 that Docker put together to illustrate Compose. A simple python web application that
 connects to Redis to store the number of hits.
 
