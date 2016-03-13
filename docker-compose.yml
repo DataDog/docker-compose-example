@@ -2,7 +2,7 @@ web:
   build: web
   command: python app.py
   ports:
-   - "5000:5000"
+   - "5000:80"
   volumes:
    - web:/code
   links:
