@@ -9,6 +9,8 @@ services:
      - ./web:/code
     links:
      - redis
+    environment:
+     - DATADOG_HOST=datadog
   redis:
     image: redis
   # agent section
@@ -16,6 +18,7 @@ services:
     build: datadog
     links:
      - redis
+     - web
     environment:
      - API_KEY=__your_datadog_api_key_here__
     volumes:
