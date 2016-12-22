@@ -66,7 +66,8 @@ And the Compose yaml files creates the link to redis with:
 
 How to test this?
 
+1. [Install Docker Compose](https://docs.docker.com/compose/install/)
 1. Clone this repository
 1. Update your `API_KEY` in `docker-compose.yml`
-1. Run all containers with `./docker-compose run`
+1. Run all containers with `docker-compose up`
 1. Verify in Datadog that your container picks up the docker and redis metrics
