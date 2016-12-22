@@ -28,6 +28,8 @@ services:
      - ./web:/code # modified here to take into account the new app path
     links:
      - redis
+    environment:
+     - DATADOG_HOST=datadog # used by the web app to initialize the Datadog library
   redis:
     image: redis
   # agent section
@@ -35,6 +37,7 @@ services:
     build: datadog
     links:
      - redis # ensures that redis is a host that the container can find
+     - web # ensures that the web app can send metrics
     environment:
      - API_KEY=__your_datadog_api_key_here__
     volumes:
