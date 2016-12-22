@@ -17,28 +17,30 @@ connects to Redis to store the number of hits.
 Here is the `docker-compose.yml` that powers the whole setup.
 
 ```yaml
-web:
-  build: web
-  command: python app.py
-  ports:
-   - "5000:5000"
-  volumes:
-   - web:/code # modified here to take into account the new app path
-  links:
-   - redis
-redis:
-  image: redis
-# agent section
-datadog:
-  build: datadog
-  links:
-   - redis # ensures that redis is a host that the container can find
-  environment:
-   - API_KEY=__your_datadog_api_key_here__
-  volumes:
-   - /var/run/docker.sock:/var/run/docker.sock
-   - /proc/mounts:/host/proc/mounts:ro
-   - /sys/fs/cgroup:/host/sys/fs/cgroup:ro
+version: "2"
+services:
+  web:
+    build: web
+    command: python app.py
+    ports:
+     - "5000:5000"
+    volumes:
+     - ./web:/code # modified here to take into account the new app path
+    links:
+     - redis
+  redis:
+    image: redis
+  # agent section
+  datadog:
+    build: datadog
+    links:
+     - redis # ensures that redis is a host that the container can find
+    environment:
+     - API_KEY=__your_datadog_api_key_here__
+    volumes:
+     - /var/run/docker.sock:/var/run/docker.sock
+     - /proc/mounts:/host/proc/mounts:ro
+     - /sys/fs/cgroup:/host/sys/fs/cgroup:ro
 ```
 
 # Configuring the Agent
