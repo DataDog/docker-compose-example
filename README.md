@@ -17,28 +17,33 @@ connects to Redis to store the number of hits.
 Here is the `docker-compose.yml` that powers the whole setup.
 
 ```yaml
-web:
-  build: web
-  command: python app.py
-  ports:
-   - "5000:5000"
-  volumes:
-   - web:/code # modified here to take into account the new app path
-  links:
-   - redis
-redis:
-  image: redis
-# agent section
-datadog:
-  build: datadog
-  links:
-   - redis # ensures that redis is a host that the container can find
-  environment:
-   - API_KEY=__your_datadog_api_key_here__
-  volumes:
-   - /var/run/docker.sock:/var/run/docker.sock
-   - /proc/mounts:/host/proc/mounts:ro
-   - /sys/fs/cgroup:/host/sys/fs/cgroup:ro
+version: "2"
+services:
+  web:
+    build: web
+    command: python app.py
+    ports:
+     - "5000:5000"
+    volumes:
+     - ./web:/code # modified here to take into account the new app path
+    links:
+     - redis
+    environment:
+     - DATADOG_HOST=datadog # used by the web app to initialize the Datadog library
+  redis:
+    image: redis
+  # agent section
+  datadog:
+    build: datadog
+    links:
+     - redis # ensures that redis is a host that the container can find
+     - web # ensures that the web app can send metrics
+    environment:
+     - API_KEY=__your_datadog_api_key_here__
+    volumes:
+     - /var/run/docker.sock:/var/run/docker.sock
+     - /proc/mounts:/host/proc/mounts:ro
+     - /sys/fs/cgroup:/host/sys/fs/cgroup:ro
 ```
 
 # Configuring the Agent
@@ -66,7 +71,8 @@ And the Compose yaml files creates the link to redis with:
 
 How to test this?
 
+1. [Install Docker Compose](https://docs.docker.com/compose/install/)
 1. Clone this repository
 1. Update your `API_KEY` in `docker-compose.yml`
-1. Run all containers with `./docker-compose run`
+1. Run all containers with `docker-compose up`
 1. Verify in Datadog that your container picks up the docker and redis metrics

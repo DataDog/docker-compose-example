@@ -1,21 +1,27 @@
-web:
-  build: web
-  command: python app.py
-  ports:
-   - "5000:5000"
-  volumes:
-   - web:/code
-  links:
-   - redis
-redis:
-  image: redis
-datadog:
-  build: datadog
-  links:
-   - redis
-  environment:
-   - API_KEY=__your_datadog_api_key_here__
-  volumes:
-   - /var/run/docker.sock:/var/run/docker.sock
-   - /proc/mounts:/host/proc/mounts:ro
-   - /sys/fs/cgroup:/host/sys/fs/cgroup:ro
+version: "2"
+services:
+  web:
+    build: web
+    command: python app.py
+    ports:
+     - "5000:5000"
+    volumes:
+     - ./web:/code
+    links:
+     - redis
+    environment:
+     - DATADOG_HOST=datadog
+  redis:
+    image: redis
+  # agent section
+  datadog:
+    build: datadog
+    links:
+     - redis
+     - web
+    environment:
+     - API_KEY=__your_datadog_api_key_here__
+    volumes:
+     - /var/run/docker.sock:/var/run/docker.sock
+     - /proc/mounts:/host/proc/mounts:ro
+     - /sys/fs/cgroup:/host/sys/fs/cgroup:ro
