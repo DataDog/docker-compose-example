@@ -42,7 +42,7 @@ services:
      - API_KEY=__your_datadog_api_key_here__
     volumes:
      - /var/run/docker.sock:/var/run/docker.sock
-     - /proc/mounts:/host/proc/mounts:ro
+     - /proc/:/host/proc/:ro
      - /sys/fs/cgroup:/host/sys/fs/cgroup:ro
 ```
 
