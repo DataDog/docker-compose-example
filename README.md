@@ -17,7 +17,7 @@ connects to Redis to store the number of hits.
 Here is the `docker-compose.yml` that powers the whole setup.
 
 ```yaml
-version: "2"
+version: "3"
 services:
   web:
     build: web
@@ -39,7 +39,7 @@ services:
      - redis # ensures that redis is a host that the container can find
      - web # ensures that the web app can send metrics
     environment:
-     - API_KEY=__your_datadog_api_key_here__
+     - DD_API_KEY=__your_datadog_api_key_here__
     volumes:
      - /var/run/docker.sock:/var/run/docker.sock
      - /proc/:/host/proc/:ro
@@ -50,14 +50,14 @@ services:
 
 Because the Agent needs to monitor redis it needs:
 
-1. the proper `redisdb.yaml` in the container's `/etc/dd-agent/conf.d`
+1. the proper `redisdb.yaml` in the container's `/etc/datadog-agent/conf.d`
 1. to find the redis node.
 
 The Agent's `Dockerfile` takes care of #1.
 
 ```
-FROM datadog/docker-dd-agent
-ADD conf.d/redisdb.yaml /etc/dd-agent/conf.d/redisdb.yaml
+FROM datadog/agent:latest
+ADD conf.d/redisdb.yaml /etc/datadog-agent/conf.d/redisdb.yaml
 ```
 
 And the Compose yaml files creates the link to redis with:
@@ -73,6 +73,6 @@ How to test this?
 
 1. [Install Docker Compose](https://docs.docker.com/compose/install/)
 1. Clone this repository
-1. Update your `API_KEY` in `docker-compose.yml`
+1. Update your `DD_API_KEY` in `docker-compose.yml`
 1. Run all containers with `docker-compose up`
 1. Verify in Datadog that your container picks up the docker and redis metrics
