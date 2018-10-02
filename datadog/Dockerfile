@@ -1,2 +1,2 @@
-FROM datadog/docker-dd-agent
-ADD conf.d/redisdb.yaml /etc/dd-agent/conf.d/redisdb.yaml
+FROM datadog/agent:latest
+ADD conf.d/redisdb.yaml /etc/datadog-agent/conf.d/redisdb.yaml
