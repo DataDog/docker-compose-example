@@ -40,6 +40,7 @@ services:
      - web # ensures that the web app can send metrics
     environment:
      - DD_API_KEY=__your_datadog_api_key_here__
+     - DD_DOGSTATSD_NON_LOCAL_TRAFFIC=true
     volumes:
      - /var/run/docker.sock:/var/run/docker.sock
      - /proc/:/host/proc/:ro
