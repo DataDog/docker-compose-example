@@ -7,12 +7,12 @@ services:
      - "5000:5000"
     volumes:
      - ./web:/code # modified here to take into account the new app path
-    links:
-     - redis
     environment:
      - DATADOG_HOST=datadog # used by the web app to initialize the Datadog library
   redis:
     image: redis
+    ports:
+     - "6379:6379"
   # agent section
   datadog:
     build: datadog
@@ -26,3 +26,5 @@ services:
      - /var/run/docker.sock:/var/run/docker.sock
      - /proc/:/host/proc/:ro
      - /sys/fs/cgroup:/host/sys/fs/cgroup:ro
+    ports:
+     - "8125:8125/udp"
