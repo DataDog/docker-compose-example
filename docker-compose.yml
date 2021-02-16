@@ -2,6 +2,9 @@ version: "3"
 services:
   web:
     build: web
+    # Uncomment to enable log collection for the web container
+    # labels:
+    #   com.datadoghq.ad.logs: '[{"source": "web"}]'
     command: python app.py
     ports:
      - "5000:5000"
@@ -13,16 +16,27 @@ services:
      - DATADOG_HOST=datadog # used by the web app to initialize the Datadog library
   redis:
     image: redis
+    # Uncomment to enable log collection for the redis container
+    # labels:
+    #   com.datadoghq.ad.logs: '[{"source": "redis"}]'
   # agent section
   datadog:
     build: datadog
+    # Uncomment to enable log collection for the agent container
+    # labels:
+    #   com.datadoghq.ad.logs: '[{"source": "redis"}]'
     links:
      - redis # ensures that redis is a host that the container can find
      - web # ensures that the web app can send metrics
     environment:
      - DD_API_KEY=__your_datadog_api_key_here__
      - DD_DOGSTATSD_NON_LOCAL_TRAFFIC=true
+     # Uncomment to enable the log collection feature
+     # - DD_LOGS_ENABLED=true
+     # - DD_LOGS_CONFIG_DOCKER_CONTAINER_USE_FILE=true
     volumes:
      - /var/run/docker.sock:/var/run/docker.sock
      - /proc/:/host/proc/:ro
      - /sys/fs/cgroup:/host/sys/fs/cgroup:ro
+     # Uncomment to enable the log collection feature
+     # - /var/lib/docker/containers:/var/lib/docker/containers:ro
