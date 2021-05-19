@@ -14,7 +14,7 @@ services:
   redis:
     image: redis
   # agent section
-  datadog:
+  datadg:
     build: datadog
     links:
      - redis # ensures that redis is a host that the container can find
