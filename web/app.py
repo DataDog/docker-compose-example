@@ -5,7 +5,7 @@ import os
 
 # Add and initialize Datadog monitoring.
 from datadog import initialize, statsd
-initialize(statsd_host=os.environ.get('DATADOG_HOST'),)
+initialize(statsd_host=os.environ.get('DATADOG_HOST'))
 
 app = Flask(__name__)
 redis = Redis(host='redis', port=6379)
