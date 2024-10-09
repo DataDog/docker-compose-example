@@ -11,6 +11,7 @@ services:
      - redis
     environment:
      - DATADOG_HOST=datadog # used by the web app to initialize the Datadog library
+     - DD_AGENT_HOST=dd-agent # points to dd-agent to send traces
   redis:
     image: redis
   # agent section
@@ -22,6 +23,9 @@ services:
     environment:
      - DD_API_KEY=__your_datadog_api_key_here__
      - DD_DOGSTATSD_NON_LOCAL_TRAFFIC=true
+     - DD_APM_ENABLED=true
+     - DD_AGENT_HOST=dd-agent # allows web container to forward traces to agent
+     - DD_SITE=datadoghq.com
     volumes:
      - /var/run/docker.sock:/var/run/docker.sock
      - /proc/:/host/proc/:ro
