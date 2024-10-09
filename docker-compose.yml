@@ -2,7 +2,7 @@ version: "3"
 services:
   web:
     build: web
-    command: python app.py
+    command: ddtrace-run python app.py
     ports:
      - "5000:5000"
     volumes:
