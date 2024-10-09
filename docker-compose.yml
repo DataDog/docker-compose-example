@@ -28,6 +28,7 @@ services:
      - DD_APM_NON_LOCAL_TRAFFIC=true # enables agent to receive traces from other containers
      - DD_AGENT_HOST=dd-agent # allows web container to forward traces to agent
      - DD_SITE=datadoghq.com # determines datadog instance to send data to (e.g change to datadoghq.eu for EU1)
+     - DATADOG_HOST=datadog
     volumes:
      - /var/run/docker.sock:/var/run/docker.sock
      - /proc/:/host/proc/:ro

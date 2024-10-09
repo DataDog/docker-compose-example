@@ -11,7 +11,7 @@ Let's see what it looks like.
 # Starting off from the Compose example
 
 To build a meaningful setup, we start from the [example](https://docs.docker.com/compose/#overview)
-that Docker put together to illustrate Compose. A simple python web application that
+that Docker put together to illustrate Compose. A simple Python web application that
 connects to Redis to store the number of hits.
 
 Here is the `docker-compose.yml` that powers the whole setup.
@@ -55,10 +55,9 @@ services:
 
 # Configuring the Agent
 
-Because the Agent needs to monitor redis it needs:
+Because the Agent needs to monitor Redis it needs:
 
-1. the proper `redisdb.yaml` in the container's `/etc/datadog-agent/conf.d`
-1. to find the redis node.
+1. The proper `redisdb.yaml` in the container's `/etc/datadog-agent/conf.d` to find the Redis node.
 
 The Agent's `Dockerfile` takes care of #1.
 
@@ -67,12 +66,49 @@ FROM datadog/agent:latest
 ADD conf.d/redisdb.yaml /etc/datadog-agent/conf.d/redisdb.yaml
 ```
 
-And the Compose yaml files creates the link to redis with:
+And the Compose yaml files creates the link to Redis with:
 
 ```yaml
   links:
     - redis
 ```
+
+# Configuring APM
+
+The Agent needs the following in order to collect Python traces from the `web` container:
+
+1. The `ddtrace` library. 
+
+This can be achieved by adding the following to the `requirements.txt` for our `web` app. The `datadog` is used to collect our custom (`dogstatsd`) metrics
+
+```
+flask
+redis
+datadog
+ddtrace <--
+```
+
+2. Tags that identify the app and its origin. 
+
+This can be achieved by simply adding a few environment variables to the `web` container's `Dockerfile`.
+
+```dockerfile
+FROM python:2.7
+ADD . /code
+WORKDIR /code
+RUN pip install -r requirements.txt
+
+# This is where you set DD tags
+ENV DD_SERVICE web        <-- This sets the "service" name in Datadog
+ENV DD_ENV sandbox        <-- This sets the "env" name in Datadog
+ENV DD_VERSION 1.0        <-- This sets the "version" number in Datadog
+```
+
+3. Environment variables & container name set to ensure connection between your app container and the Agent. 
+
+You will want to make sure that the `DD_AGENT_HOST` environment variables set in your `docker-compose.yml` are the same for both the Agent  and your app container. 
+
+Also set the `container_name` for the `datadog` container to be the same as this `DD_AGENT_HOST` value. 
 
 # All in one
 
@@ -82,4 +118,12 @@ How to test this?
 1. Clone this repository
 1. Update your `DD_API_KEY` in `docker-compose.yml`
 1. Run all containers with `docker-compose up`
-1. Verify in Datadog that your container picks up the docker and redis metrics
+1. Refresh `localhost:5000` a few times in your web browser to generate some traces. 
+1. Verify in Datadog that your container picks up the Docker & Redis metrics along with all the APM traces. 
+  - An easy way to verify you are receiving these metrics is by visiting the `Metrics Summary` page. Navigate to `Metrics -> Summary`, then search for either `docker` or `redis` to see if any metrics appear. See example below.
+
+  ![metrics_summary](images/metrics_summary.png)
+
+  - An easy way to verify you are receiving APM traces is by visiting the `Trace Explorer` page. Navigate to `APM -> Traces -> Explorer` and you should see a list of traces. If you click on a trace, your flame graph should look like this. 
+
+  ![flame_graph](images/flame_graph.png)
