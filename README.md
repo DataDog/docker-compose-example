@@ -79,7 +79,7 @@ The Agent needs the following in order to collect Python traces from the `web` c
 
 1. The `ddtrace` library. 
 
-This can be achieved by adding the following to the `requirements.txt` for our `web` app. The `datadog` is used to collect our custom (`dogstatsd`) metrics
+This can be achieved by adding the following to the `requirements.txt` for our `web` app. The `datadog` library is used to collect our custom (`dogstatsd`) metrics
 
 ```
 flask
