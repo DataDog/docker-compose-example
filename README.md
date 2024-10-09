@@ -66,7 +66,7 @@ FROM datadog/agent:latest
 ADD conf.d/redisdb.yaml /etc/datadog-agent/conf.d/redisdb.yaml
 ```
 
-And the Compose yaml files creates the link to Redis with:
+2. And the Compose yaml files creates the link to Redis with:
 
 ```yaml
   links:
