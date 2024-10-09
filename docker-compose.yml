@@ -1,4 +1,4 @@
-version: "3"
+version: "4"
 services:
   web:
     build: web
@@ -16,6 +16,7 @@ services:
     image: redis
   # agent section
   datadog:
+    container_name: dd-agent
     build: datadog
     links:
      - redis # ensures that redis is a host that the container can find
@@ -24,6 +25,7 @@ services:
      - DD_API_KEY=__your_datadog_api_key_here__
      - DD_DOGSTATSD_NON_LOCAL_TRAFFIC=true
      - DD_APM_ENABLED=true
+     - DD_APM_NON_LOCAL_TRAFFIC=true
      - DD_AGENT_HOST=dd-agent # allows web container to forward traces to agent
      - DD_SITE=datadoghq.com
     volumes:
