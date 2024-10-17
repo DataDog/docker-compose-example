@@ -1,8 +1,8 @@
-version: "3"
+version: "4"
 services:
   web:
     build: web
-    command: python app.py
+    command: ddtrace-run python app.py
     ports:
      - "5000:5000"
     volumes:
@@ -11,17 +11,24 @@ services:
      - redis
     environment:
      - DATADOG_HOST=datadog # used by the web app to initialize the Datadog library
+     - DD_AGENT_HOST=dd-agent # points to dd-agent to send traces
   redis:
     image: redis
   # agent section
   datadog:
+    container_name: dd-agent
     build: datadog
     links:
      - redis # ensures that redis is a host that the container can find
      - web # ensures that the web app can send metrics
     environment:
      - DD_API_KEY=__your_datadog_api_key_here__
-     - DD_DOGSTATSD_NON_LOCAL_TRAFFIC=true
+     - DD_DOGSTATSD_NON_LOCAL_TRAFFIC=true # enables agent to receive custom metrics from other containers
+     - DD_APM_ENABLED=true # enables tracing
+     - DD_APM_NON_LOCAL_TRAFFIC=true # enables agent to receive traces from other containers
+     - DD_AGENT_HOST=dd-agent # allows web container to forward traces to agent
+     - DD_SITE=datadoghq.com # determines datadog instance to send data to (e.g change to datadoghq.eu for EU1)
+     - DATADOG_HOST=datadog
     volumes:
      - /var/run/docker.sock:/var/run/docker.sock
      - /proc/:/host/proc/:ro
